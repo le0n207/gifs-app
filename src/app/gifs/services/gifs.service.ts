@@ -1,9 +1,11 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { Gif, SearchResponse } from '../interfaces/gifs.interfaces';
 
 
 @Injectable({providedIn: 'root'})
 export class GifsService {
+  public gifsList:Gif[] = [];
 
   private apiKey:string = '7D14n5drEpvFtUPX36anEx23w5vWpgKW';
   private serviceUrl:string = 'https://api.giphy.com/v1/gifs';
@@ -27,9 +29,16 @@ export class GifsService {
   searchTag(tag: string){
     if (tag.length === 0) return;
     this.organizeHistory(tag);
-    this.http.get(`${this.serviceUrl}/search?api_key=7D14n5drEpvFtUPX36anEx23w5vWpgKW&q=Valorant&limit=10`)
+
+    const params = new HttpParams()
+    .set('api_key', this.apiKey)
+    .set('limit', '10')
+    .set('q', tag);
+
+    this.http.get<SearchResponse>(`${this.serviceUrl}/search`,{params})
     .subscribe(resp => {
-      console.log(resp);
+      console.log(resp.data);
+      this.gifsList = resp.data;
     });
 
 
